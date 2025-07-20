@@ -47,15 +47,15 @@
 
     .tab {
       flex: 1;
-      min-width: 200px;
+      min-width: 160px;
       text-align: center;
-      padding: 18px 25px;
+      padding: 18px 20px;
       background-color: #ecf0f1;
       color: #34495e;
       cursor: pointer;
       border: none;
       border-radius: 10px 10px 0 0;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 500;
       transition: all 0.3s ease;
       margin-bottom: -3px;
@@ -220,6 +220,14 @@
       background: linear-gradient(135deg, #3498db, #2980b9);
     }
 
+    #openAllLinksButton {
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    }
+
+    #clearLinksButton {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    }
+
     .button:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
@@ -242,7 +250,7 @@
       min-height: 100px;
     }
 
-    #inputText, #urlSuffixInput {
+    #inputText, #urlSuffixInput, #linksInput {
       margin-bottom: 15px;
     }
 
@@ -272,6 +280,36 @@
       cursor: pointer;
     }
 
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      border: 2px solid #ecf0f1;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3498db;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-top: 5px;
+    }
+
+    .large-textarea {
+      min-height: 300px;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       body {
@@ -291,7 +329,7 @@
       .tab {
         font-size: 14px;
         padding: 12px 15px;
-        min-width: 120px;
+        min-width: 100px;
       }
 
       .tab-content {
@@ -311,6 +349,11 @@
 
       .switch-container {
         grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .stats-container {
+        flex-direction: column;
         gap: 15px;
       }
     }
@@ -342,6 +385,7 @@
       <div class="tab" data-tab="csv-converter">CSV Converter</div>
       <div class="tab" data-tab="color-picker">Color Picker</div>
       <div class="tab" data-tab="links">Link Creation</div>
+      <div class="tab" data-tab="open-all">Open All</div>
     </div>
 
     <div id="text-cleaner" class="tab-content active">
@@ -406,8 +450,39 @@
       <textarea id="outputLink" readonly placeholder="Generated link will appear here"></textarea>
       <button id="copyLinkButton" class="button">Copy</button>
     </div>
-  </div>
 
-  <script src="popup.js"></script>
-</body>
-</html>
+    <div class="tab-content" id="open-all">
+      <h3 style="margin-bottom: 20px;">Open All Links</h3>
+      <p style="margin-bottom: 15px; color: #7f8c8d; font-size: 14px;">
+        Paste your list of URLs here (one per line or separated by commas). Invalid links will be ignored.
+      </p>
+      <textarea 
+        id="linksInput" 
+        class="large-textarea"
+        placeholder="Paste your links here...&#10;Example:&#10;https://google.com&#10;https://github.com&#10;https://stackoverflow.com&#10;&#10;Or comma-separated:&#10;https://google.com, https://github.com, https://stackoverflow.com"
+      ></textarea>
+      
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-number" id="totalLinks">0</div>
+          <div class="stat-label">Total Links</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="validLinks">0</div>
+          <div class="stat-label">Valid Links</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="invalidLinks">0</div>
+          <div class="stat-label">Invalid Links</div>
+        </div>
+      </div>
+
+      <button id="openAllLinksButton" class="button">Open All Valid Links</button>
+      <button id="clearLinksButton" class="button">Clear All</button>
+      
+      <div id="linksResultContainer" style="margin-top: 20px; display: none;">
+        <h4 style="color: #2c3e50; margin-bottom: 10px;">Results:</h4>
+        <div id="linksResult"></div>
+      </div>
+    </div>
+  </div>
