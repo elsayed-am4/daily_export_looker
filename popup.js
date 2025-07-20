@@ -345,3 +345,107 @@ copyLinkButton.addEventListener("click", async () => {
     console.error("Failed to copy:", err);
   }
 });
+function isValidUrl(string) {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+
+// ===============================
+
+        // Open All Links functionality
+
+    function parseLinks(input) {
+      let links = [];
+      
+      // Split by both newlines and commas
+      const rawLinks = input.split(/[\n,]+/);
+      
+      rawLinks.forEach(link => {
+        const trimmedLink = link.trim();
+        if (trimmedLink) {
+          // Add protocol if missing
+          if (!trimmedLink.startsWith('http://') && !trimmedLink.startsWith('https://')) {
+            links.push('https://' + trimmedLink);
+          } else {
+            links.push(trimmedLink);
+          }
+        }
+      });
+      
+      return links;
+    }
+
+    function updateLinkStats() {
+      const input = document.getElementById("linksInput").value;
+      const links = parseLinks(input);
+      const validLinks = links.filter(link => isValidUrl(link));
+      const invalidLinks = links.filter(link => !isValidUrl(link));
+
+      document.getElementById("totalLinks").textContent = links.length;
+      document.getElementById("validLinks").textContent = validLinks.length;
+      document.getElementById("invalidLinks").textContent = invalidLinks.length;
+    }
+
+    // Update stats as user types
+    document.getElementById("linksInput").addEventListener("input", updateLinkStats);
+
+    document.getElementById("openAllLinksButton").addEventListener("click", function() {
+      const input = document.getElementById("linksInput").value;
+      const links = parseLinks(input);
+      const validLinks = links.filter(link => isValidUrl(link));
+      const invalidLinks = links.filter(link => !isValidUrl(link));
+
+      if (validLinks.length === 0) {
+        showTemporaryMessage("No valid links found!");
+        return;
+      }
+
+      // Show confirmation for many links
+      if (validLinks.length > 10) {
+        if (!confirm(`You're about to open ${validLinks.length} tabs. Continue?`)) {
+          return;
+        }
+      }
+
+      // Open valid links
+      validLinks.forEach((link, index) => {
+        setTimeout(() => {
+          window.open(link, '_blank');
+        }, index * 100); // Small delay to prevent browser blocking
+      });
+
+      // Show results
+      const resultContainer = document.getElementById("linksResultContainer");
+      const resultDiv = document.getElementById("linksResult");
+      
+      let resultHTML = `<p style="color: #27ae60; margin-bottom: 10px;"><strong>✅ Opened ${validLinks.length} valid links</strong></p>`;
+      
+      if (invalidLinks.length > 0) {
+        resultHTML += `<p style="color: #e74c3c; margin-bottom: 10px;"><strong>❌ Ignored ${invalidLinks.length} invalid links:</strong></p>`;
+        resultHTML += `<ul style="color: #e74c3c; margin-left: 20px;">`;
+        invalidLinks.forEach(link => {
+          resultHTML += `<li style="margin-bottom: 5px;">${link}</li>`;
+        });
+        resultHTML += `</ul>`;
+      }
+
+      resultDiv.innerHTML = resultHTML;
+      resultContainer.style.display = "block";
+
+      showTemporaryMessage(`Opened ${validLinks.length} links successfully!`);
+    });
+
+    document.getElementById("clearLinksButton").addEventListener("click", function() {
+      document.getElementById("linksInput").value = "";
+      document.getElementById("linksResultContainer").style.display = "none";
+      updateLinkStats();
+      showTemporaryMessage("Cleared all links!");
+    });
+
+    // Initialize stats
+    updateLinkStats();
