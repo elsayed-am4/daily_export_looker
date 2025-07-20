@@ -360,24 +360,46 @@ function isValidUrl(string) {
         // Open All Links functionality
 // Open All Links functionality - ADD THIS TO YOUR popup.js FILE
 
+
 function isValidUrl(string) {
   try {
-    new URL(string);
+    const url = new URL(string);
+    // Check if it has a valid protocol (http or https)
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+    // Check if it has a valid hostname (not empty and contains at least one dot)
+    if (!url.hostname || !url.hostname.includes('.')) {
+      return false;
+    }
+    // Additional check: hostname should not be just dots or invalid characters
+    if (url.hostname.match(/^[.\-]+$/) || url.hostname.includes('..')) {
+      return false;
+    }
     return true;
-  } catch (_) {
+  } catch (error) {
     return false;
   }
 }
 
-function parseLinks(input) {
+unction parseLinks(input) {
   let links = [];
   
-  // Split by both newlines and commas
+  // Split by both newlines and commas, then clean up
   const rawLinks = input.split(/[\n,]+/);
   
   rawLinks.forEach(link => {
-    const trimmedLink = link.trim();
+    let trimmedLink = link.trim();
     if (trimmedLink) {
+      // Remove any extra whitespace or invisible characters
+      trimmedLink = trimmedLink.replace(/\s+/g, '');
+      
+      // Skip obviously invalid entries (too short, no dots, etc.)
+      if (trimmedLink.length < 4 || !trimmedLink.includes('.')) {
+        links.push(trimmedLink); // Still add to show as invalid
+        return;
+      }
+      
       // Add protocol if missing
       if (!trimmedLink.startsWith('http://') && !trimmedLink.startsWith('https://')) {
         links.push('https://' + trimmedLink);
@@ -441,7 +463,7 @@ document.getElementById("openAllLinksButton").addEventListener("click", function
     const resultContainer = document.getElementById("linksResultContainer");
     const resultDiv = document.getElementById("linksResult");
     
-    let resultHTML = `<p style="color: #27ae60; margin-bottom: 10px;"><strong>✅ Attempted to open ${validLinks.length} valid links</strong></p>`;
+    let resultHTML = `<p style="color: #27ae60; margin-bottom: 10px;"><strong>✅ Successfully open ${validLinks.length} valid links</strong></p>`;
     
     if (invalidLinks.length > 0) {
       resultHTML += `<p style="color: #e74c3c; margin-bottom: 10px;"><strong>❌ Ignored ${invalidLinks.length} invalid links:</strong></p>`;
