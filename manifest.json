@@ -4,7 +4,7 @@
   "version": "1.1",
   "description": "Converts input text into a URL-friendly format.",
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "indexs.html",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon16.png",
