@@ -382,7 +382,7 @@ function isValidUrl(string) {
   }
 }
 
-unction parseLinks(input) {
+function parseLinks(input) {
   let links = [];
   
   // Split by both newlines and commas, then clean up
